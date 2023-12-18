@@ -13,7 +13,11 @@ This is to better understand how memory allocation works by implementing one of 
 
 ## Challenge
 
-The main challenge is to avoid as much as possible the use of the C heap. Except for the fact that it would be circular to implement a data structure while making use of the same concept, allocating memory to the C heap would keep memory available for the lifetime of the process. However, we only want to free using the heapC API, and manage the personalized heap. In other words, the aim was to control absolutely all data manipulation.
+The main challenge is to avoid as much as possible the use of the C heap. Except for the fact that it would be circular to implement a data structure while making use of the same concept, allocating memory to the C heap would keep memory available for the lifetime of the process. However, we only want to free using the heapC API and manage the personalized heap. In other words, the aim was to control absolutely all data manipulation.
+
+## Running the demo 
+
+Source files are under `/src`. If GCC is accessible via PATH for you, simply run `/src/make.bat`. Feel free to make modifications, allocate new memory, and even free existing pointers.
 
 
 ## Improvement
