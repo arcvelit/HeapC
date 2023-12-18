@@ -24,16 +24,21 @@ void *heapc_alloc(size_t size) {
     return alloc_ptr;
 }
 
-// Percent spacing in heap
-double fragmentation_index() {
-    if (heap_size == 0) return 0.0;
+// Free a block of memory
+void heapc_free(void* ptr) {
 
-    int block_sizes = 0;
-    for (size_t i = 0; i < mem_blocks_size; i++) {
-        block_sizes += mem_blocks[i].size;
-    }
+    int freed_index = find_mem_block_index(ptr);
 
-    return 1.0 - (float)block_sizes / (float)heap_size;
+    // Pointer not registered
+    if (freed_index < 0) return;
+
+    // Keep the mem blocks contiguous
+    compress_mem_blocks(mem_blocks, mem_blocks_size, freed_index);
+    mem_blocks_size--;
+
+    // Compress heap if 50%  of size is free  
+    if (fragmentation_index() > 0.50)
+        heapc_compress();
 }
 
 // Reset fragmentation
@@ -48,6 +53,31 @@ void compress_mem_blocks(Mem_Block* blocks, int size, int k) {
     }
 }
 
+// Get the index of a registered pointer
+int find_mem_block_index(void *ptr) {
+
+    int index = -1; 
+    for (size_t i = 0; i < mem_blocks_size; i++) {
+        if (mem_blocks[i].ptr == ptr) {
+            index = i;
+            break;
+        }
+    } 
+    return index;
+}
+
+// Percent spacing in heap
+double fragmentation_index() {
+    if (heap_size == 0) return 0.0;
+
+    int block_sizes = 0;
+    for (size_t i = 0; i < mem_blocks_size; i++) {
+        block_sizes += mem_blocks[i].size;
+    }
+
+    return 1.0 - (float)block_sizes / (float)heap_size;
+}
+
 // Print contents of heap
 void heap_dump() {
     for (size_t i = 0; i < heap_size; i++) {
@@ -55,28 +85,6 @@ void heap_dump() {
     }
     printf("\n");
 }
-
-// Free a block of memory
-void heapc_free(void* ptr) {
-
-    int freed_index = -1; 
-    for (size_t i = 0; i < mem_blocks_size; i++) {
-        if (mem_blocks[i].ptr == ptr) {
-            freed_index = i;
-        }
-    } 
-
-    // Pointer not registered
-    if (freed_index < 0) { return; }
-
-    // Keep the mem blocks contiguous
-    compress_mem_blocks(mem_blocks, mem_blocks_size, freed_index);
-    mem_blocks_size--;
-
-    // Compress heap if 50%  of size is free  
-    if (fragmentation_index() > 0.50)
-        heapc_compress();
-} 
 
 // Print sizes of memory blocks
 void mem_dump() {

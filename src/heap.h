@@ -15,8 +15,11 @@ typedef struct {
 
 void *heapc_alloc(size_t size);
 void heapc_free(void *ptr);
+void heapc_compress();
+void compress_mem_blocks(Mem_Block *blocks, int size, int k);
+int find_mem_block_index(void *ptr);
+double fragmentation_index();
 void heap_dump();
 void mem_dump();
-double fragmentation_index();
 
 #endif  // HEAP_H
